@@ -4,10 +4,10 @@
 	<meta charset="UTF-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Document</title>
+	<title>WebSocket vanilla</title>
 </head>
 <body>
-	<p>Messages</p>
+	<h2>Messages</h2>
 	<output id="messages"></output>
 	<script>
 		const messages = document.getElementById("messages");
@@ -15,10 +15,11 @@
 		//instance a connection, using ws: protocol
 		const socket = new WebSocket('ws://localhost:2009')
 
-		socket.onopen = (event) => console.debug('WebSocket connected')
+		socket.onopen = (event) => console.debug('WebSocket connected');
+		console.debug(socket)
 
 		socket.onmessage = (event) => {
-			const message = msg.data;
+			const message = event.data;
 
 			console.debug('New message', message)
 
