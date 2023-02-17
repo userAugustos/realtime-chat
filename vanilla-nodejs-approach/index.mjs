@@ -10,7 +10,7 @@ const server = createServer((req, res) => {
 	res.end("You're on a Vanilla approach of websockets with nodejs")
 }).listen(PORT, () => console.debug(`all good to go in localhost:${PORT}`));
 
-server.on('upgrade', onSocketUpdate);
+server.on('upgrade', onSocketUpgrade);
 
 function createSocketAccept(id) {
 	// so a lot of the crypto lib here, but we start a hash in the sha1 pattern, pass the strings that we want to it, and return digested in the base64
@@ -32,10 +32,17 @@ function prepareHandShakeResponse(id) {
 	].map(line => line.concat('\r\n')).join('')
 }
 
-function onSocketUpdate (req, socket, head) {
+function onSocketUpgrade (req, socket, head) {
 	const { 'sec-websocket-key': clientSocketKey } = req.headers;
 	const response = prepareHandShakeResponse(clientSocketKey);
-	socket.write(response)
+	socket.write(response);
+
+// 	a listener for the `readable` event, it will be called when the socket is ready to output data
+	socket.on('readable', () => onSocketReadable(socket))
+}
+
+function onSocketReadable(socket) {
+
 }
 ;[
 	"uncaughtException",
