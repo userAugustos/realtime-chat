@@ -15,7 +15,7 @@
 		//instance a connection, using ws: protocol
 		const socket = new WebSocket('ws://localhost:2009')
 
-		socket.onopen = (event) => console.debug('WebSocket connected');
+		socket.onopen = () => console.debug('WebSocket connected');
 		console.debug(socket)
 
 		socket.onmessage = (event) => {
@@ -25,9 +25,8 @@
 
 			messages.innerHTML += `<br /> ${message}`
 		}
-
 		socket.onerror = (error) => console.debug('websocket error', error)
-		socket.onclose = (event) => console.debug('disconnected')
+		socket.onclose = () => console.debug('disconnected')
 	</script>
 </body>
 </html>
