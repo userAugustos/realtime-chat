@@ -15,16 +15,33 @@
 		//instance a connection, using ws: protocol
 		const socket = new WebSocket('ws://localhost:2009')
 
-		socket.onopen = () => console.debug('WebSocket connected');
+		socket.onopen = (event) => {
+			console.debug('WebSocket connected');
+
+			const id = Math.round(Math.random() * 100)
+
+			const data = JSON.stringify({
+				id,
+				name: `[${id}] Augustos`,
+				address: {
+					street: 'street',
+					number: 20
+				},
+			})
+			console.debug(data)
+			socket.send(data)
+		}
 		console.debug(socket)
 
-		socket.onmessage = (event) => {
-			const message = event.data;
 
-			console.debug('New message', message)
 
-			messages.innerHTML += `<br /> ${message}`
-		}
+		// socket.onmessage = (event) => {
+		// 	const message = event.data;
+		//
+		// 	console.debug('New message', message)
+		//
+		// 	messages.innerHTML += `<br /> ${message}`
+		// }
 		socket.onerror = (error) => console.debug('websocket error', error)
 		socket.onclose = () => console.debug('disconnected')
 	</script>
