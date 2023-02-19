@@ -4,6 +4,7 @@ import crypto from 'crypto';
 const PORT = 2009
 
 const WEBSOCKET_MAGIC_STRING_KEY = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11'
+const MASK_KEY_BYTES_LENGTH = 4
 const SEVEN_BITES_INTEGER_MARKER = 125
 const SIXTEEN_BITES_INTEGER_MARKER = 126
 const SIXTYFOUR_BITS_INTEGER_MARKER = 127 // 127 is the maximum we can work on a data frame
@@ -72,8 +73,22 @@ function onSocketReadable(socket) {
 	console.debug("to byte", (markerAndPayLoadLength).toString(2))
 
 	const lengthIndicatorInBits = markerAndPayLoadLength - FIRST_BIT
+	console.debug('length', lengthIndicatorInBits)
 
 	let messageLength = 0
+
+	if(lengthIndicatorInBits <=! SEVEN_BITES_INTEGER_MARKER) {
+		console.debug(lengthIndicatorInBits <= SEVEN_BITES_INTEGER_MARKER)
+		throw new Error(`your message is too long`)
+	}
+
+	messageLength = lengthIndicatorInBits
+
+	const maskKey = socket.read(MASK_KEY_BYTES_LENGTH);
+	const encoded = socket.read(messageLength);
+
+	console.debug(encoded)
+	console.debug('mask',maskKey)
 }
 ;[
 	"uncaughtException",
