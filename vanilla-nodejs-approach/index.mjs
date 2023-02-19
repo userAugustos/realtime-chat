@@ -69,26 +69,29 @@ function onSocketReadable(socket) {
 	const [markerAndPayLoadLength] = socket.read(1) // passing 1, can look weirdo, but, the method read() of socket, read we pass the byte to read, so whe nhe reads, it's discarded
 	// so after we make socket.read(3) the 3 byte will be read, or stored, and then discarded, so, when we read the first one in line 63, and didn't store it, he doesn't "exist" more
 
-	console.debug("initial", markerAndPayLoadLength)
-	console.debug("to byte", (markerAndPayLoadLength).toString(2))
-
 	const lengthIndicatorInBits = markerAndPayLoadLength - FIRST_BIT
-	console.debug('length', lengthIndicatorInBits)
 
 	let messageLength = 0
 
+	// so basically without the mask(FIRST_BIT), your message should be 125 bytes or less
 	if(lengthIndicatorInBits <=! SEVEN_BITES_INTEGER_MARKER) {
-		console.debug(lengthIndicatorInBits <= SEVEN_BITES_INTEGER_MARKER)
 		throw new Error(`your message is too long`)
 	}
 
 	messageLength = lengthIndicatorInBits
 
-	const maskKey = socket.read(MASK_KEY_BYTES_LENGTH);
-	const encoded = socket.read(messageLength);
+	// now with your message length we can read data on the socket
+	const maskKey = socket.read(MASK_KEY_BYTES_LENGTH); // mask
+	const encoded = socket.read(messageLength); // this will be actually our data
 
-	console.debug(encoded)
-	console.debug('mask',maskKey)
+	const decoded = unmask(encoded, maskKey) // using a func with built in methods of javascript to unmask your encoded bytes
+	console.debug(decoded.toString())
+}
+
+function unmask(encoded, maskKey){
+	const decoded = Uint8Array.from(encoded, (element, index) => element ^ maskKey[index % 4])
+
+	return Buffer.from(decoded)
 }
 ;[
 	"uncaughtException",
