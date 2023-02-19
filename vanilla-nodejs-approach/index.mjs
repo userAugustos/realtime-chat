@@ -84,8 +84,10 @@ function onSocketReadable(socket) {
 	const maskKey = socket.read(MASK_KEY_BYTES_LENGTH); // mask
 	const encoded = socket.read(messageLength); // this will be actually our data
 
-	const decoded = unmask(encoded, maskKey) // using a func with built in methods of javascript to unmask your encoded bytes
-	console.debug(decoded.toString())
+	const message = unmask(encoded, maskKey).toString('utf-8') // using a func with built-in methods of javascript to unmask your encoded bytes
+	const data = JSON.parse(message)
+
+	console.debug('payload:', data)
 }
 
 function unmask(encoded, maskKey){
